@@ -19,8 +19,7 @@ public class SpaceNavigation extends Game {
 		batch = new SpriteBatch();
 		font = new BitmapFont(); // usa Arial font x defecto
 		font.getData().setScale(2f);
-		Screen ss = new PantallaMenu(this);
-		this.setScreen(ss);
+		this.setScreen(new PantallaTutorial(this));
 	}
 
 	public void render() {
