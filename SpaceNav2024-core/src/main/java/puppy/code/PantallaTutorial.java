@@ -9,8 +9,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
 
 public class PantallaTutorial implements Screen {
-
-    
     private SpaceNavigation game;
     private OrthographicCamera camera;
     private SpriteBatch batch;

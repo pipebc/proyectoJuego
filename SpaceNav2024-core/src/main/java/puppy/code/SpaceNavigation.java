@@ -1,52 +1,50 @@
 package puppy.code;
 
 import com.badlogic.gdx.Game;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
-
-
-
 public class SpaceNavigation extends Game {
-	private String nombreJuego = "Space Navigation";
-	private SpriteBatch batch;
-	private BitmapFont font;
-	private int highScore;	
+    private String nombreJuego = "Space Navigation";
+    private SpriteBatch batch;
+    private BitmapFont font;
+    private int highScore = 0;
 
-	public void create() {
-		highScore = 0;
-		batch = new SpriteBatch();
-		font = new BitmapFont(); // usa Arial font x defecto
-		font.getData().setScale(2f);
-		this.setScreen(new PantallaTutorial(this));
-	}
+    @Override
+    public void create() {
+        batch = new SpriteBatch();
+        font = new BitmapFont(); 
+        font.getData().setScale(2); 
 
-	public void render() {
-		super.render(); // important!
-	}
+        
+        this.setScreen(new PantallaTutorial(this));
+    }
 
-	public void dispose() {
-		batch.dispose();
-		font.dispose();
-	}
+    @Override
+    public void render() {
+        super.render(); 
+    }
 
-	public SpriteBatch getBatch() {
-		return batch;
-	}
+    @Override
+    public void dispose() {
+        batch.dispose();
+        font.dispose();
+    }
 
-	public BitmapFont getFont() {
-		return font;
-	}
 
-	public int getHighScore() {
-		return highScore;
-	}
+    public SpriteBatch getBatch() {
+        return batch;
+    }
 
-	public void setHighScore(int highScore) {
-		this.highScore = highScore;
-	}
-	
-	
+    public BitmapFont getFont() {
+        return font;
+    }
 
+    public int getHighScore() {
+        return highScore;
+    }
+
+    public void setHighScore(int highScore) {
+        this.highScore = highScore;
+    }
 }
