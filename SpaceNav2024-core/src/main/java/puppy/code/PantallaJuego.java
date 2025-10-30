@@ -26,9 +26,16 @@ public class PantallaJuego implements Screen {
     private Sound soundDisparo;
     private Music gameMusic;
     
+    private Texture txNaveEnemiga;
+    private Texture txBalaEnemiga;
+    private Sound soundDisparoEnemigo;
+    
     private Nave4 nave;
     private Array<Ball2> asteroides;
     private Array<Bullet> balas;
+    
+    private Array<NaveEnemiga> navesEnemigas;
+    private Array<BalaEnemiga> balasEnemigas;
     
     private int score;
     private int ronda;
@@ -38,7 +45,8 @@ public class PantallaJuego implements Screen {
     private float velYAsteroides;
     private int cantAsteroides;
     
-
+    private float tiempoParaSpawnEnemigo;
+    private final float TIEMPO_SPAWN_ENEMIGO = 5.0f;
 
 
 	public PantallaJuego(SpaceNavigation game, int vidas, int ronda, float velX, float velY, int cant) {
@@ -61,12 +69,20 @@ public class PantallaJuego implements Screen {
         soundDisparo = Gdx.audio.newSound(Gdx.files.internal("pop-sound.mp3"));
         gameMusic = Gdx.audio.newMusic(Gdx.files.internal("piano-loops.wav"));
         
+        txNaveEnemiga = new Texture(Gdx.files.internal("EnemyShip.png"));
+        txBalaEnemiga = new Texture(Gdx.files.internal("EnemyRocket.png"));
+        soundDisparoEnemigo = Gdx.audio.newSound(Gdx.files.internal("enemy-shot.mp3"));
+        
         gameMusic.setLooping(true);
         gameMusic.setVolume(0.5f);
         gameMusic.play();
         
         balas = new Array<>();
         asteroides = new Array<>();
+        
+        navesEnemigas = new Array<>();
+        balasEnemigas = new Array<>();
+        tiempoParaSpawnEnemigo = TIEMPO_SPAWN_ENEMIGO;
         
         nave = new Nave4(txNave, soundHerido, txBala, soundDisparo, this);
         nave.setVidas(vidasIniciales);
@@ -88,15 +104,30 @@ public class PantallaJuego implements Screen {
             asteroides.add(asteroide);
         }
     }
+		
+	private void spawnNaveEnemiga() {
+		float x = MathUtils.random(0, Gdx.graphics.getWidth() - txNaveEnemiga.getWidth());
+	    float y = Gdx.graphics.getHeight();
+	        
+	    NaveEnemiga enemigo = new NaveEnemiga(txNaveEnemiga, txBalaEnemiga, soundDisparoEnemigo, this);
+	    enemigo.setPosition(x, y);
+	        
+	    navesEnemigas.add(enemigo);
+	}
 	
 	
 	public void agregarBala(Bullet bala) {
 	    balas.add(bala);
 	}
 	
+	public void agregarBalaEnemiga(BalaEnemiga bala) {
+        balasEnemigas.add(bala);
+    }
+	
 	@Override
     public void render(float delta) {
-        nave.update(delta);
+        
+		nave.update(delta);
         for (Bullet b : balas) {
             b.update(delta);
         }
@@ -104,7 +135,12 @@ public class PantallaJuego implements Screen {
             a.update(delta);
         }
         
-        
+        for (NaveEnemiga ne : navesEnemigas) {
+            ne.update(delta);
+        }
+        for (BalaEnemiga be : balasEnemigas) {
+            be.update(delta);
+        }
         
         for (Bullet b : balas) {
             for (Ball2 a : asteroides) {
@@ -119,7 +155,18 @@ public class PantallaJuego implements Screen {
             }
         }
         
-        
+        for (Bullet b : balas) {
+            for (NaveEnemiga ne : navesEnemigas) {
+                if (b.getBoundingBox().overlaps(ne.getBoundingBox())) {
+                    if (!b.isDestroyed() && !ne.estaDestruido()) {
+                        ne.serGolpeado(1);
+                        b.destroy();      
+                        soundExplosion.play();
+                        score += 50;
+                    }
+                }
+            }
+        }
 
         
         if (!nave.estaHerido()) {
@@ -128,6 +175,24 @@ public class PantallaJuego implements Screen {
                      if (!a.isDestroyed()) {
                          a.serGolpeado(1);
                          nave.serGolpeado(1); 
+                     }
+                 }
+             }
+             
+             for (BalaEnemiga be : balasEnemigas) {
+                 if (be.getBoundingBox().overlaps(nave.getBoundingBox())) {
+                     if (!be.isDestroyed()) {
+                         nave.serGolpeado(1);
+                         be.destroy();
+                     }
+                 }
+             }
+             
+             for (NaveEnemiga ne : navesEnemigas) {
+                 if (ne.getBoundingBox().overlaps(nave.getBoundingBox())) {
+                     if (!ne.estaDestruido()) {
+                         nave.serGolpeado(1); 
+                         ne.serGolpeado(1); 
                      }
                  }
              }
@@ -149,7 +214,19 @@ public class PantallaJuego implements Screen {
             }
         }
 
+        Iterator<NaveEnemiga> enemigoIter = navesEnemigas.iterator();
+        while (enemigoIter.hasNext()) {
+            if (enemigoIter.next().isDestroyed()) {
+                enemigoIter.remove();
+            }
+        }
         
+        Iterator<BalaEnemiga> balaEnemigaIter = balasEnemigas.iterator();
+        while (balaEnemigaIter.hasNext()) {
+            if (balaEnemigaIter.next().isDestroyed()) {
+                balaEnemigaIter.remove();
+            }
+        }
         
         if (nave.estaDestruido()) {
             if (score > game.getHighScore()) {
@@ -165,6 +242,18 @@ public class PantallaJuego implements Screen {
         if (asteroides.size == 0) {
             ronda++;
             crearAsteroides(cantAsteroides + ronda);
+            
+            if (ronda >= 3) {
+                tiempoParaSpawnEnemigo = TIEMPO_SPAWN_ENEMIGO / 2;
+            }
+        }
+        
+        if (ronda >= 3) {
+            tiempoParaSpawnEnemigo -= delta;
+            if (tiempoParaSpawnEnemigo <= 0) {
+                spawnNaveEnemiga();
+                tiempoParaSpawnEnemigo = MathUtils.random(TIEMPO_SPAWN_ENEMIGO * 0.8f, TIEMPO_SPAWN_ENEMIGO * 1.2f);
+            }
         }
 
         
@@ -180,6 +269,13 @@ public class PantallaJuego implements Screen {
         }
         for (Bullet b : balas) {
             b.draw(game.getBatch());
+        }
+        
+        for (NaveEnemiga ne : navesEnemigas) {
+            ne.draw(game.getBatch());
+        }
+        for (BalaEnemiga be : balasEnemigas) {
+            be.draw(game.getBatch());
         }
         
         nave.draw(game.getBatch());
@@ -206,6 +302,10 @@ public class PantallaJuego implements Screen {
         soundHerido.dispose();
         soundDisparo.dispose();
         gameMusic.dispose();
+        
+        txNaveEnemiga.dispose();
+        txBalaEnemiga.dispose();
+        soundDisparoEnemigo.dispose();
     }
 
     @Override
