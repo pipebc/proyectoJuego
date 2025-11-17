@@ -128,6 +128,15 @@ public class Nave4 extends EntidadJuego implements Destructible {
         }
     }
     
+    public void activarInvencibilidad() {
+
+        this.herido = true;
+        this.tiempoHerido = this.tiempoHeridoMax; 
+
+        this.visibleParpadeo = true;
+        this.tiempoParpadeo = 0f;
+
+    }
     
     @Override
     public boolean estaDestruido() {

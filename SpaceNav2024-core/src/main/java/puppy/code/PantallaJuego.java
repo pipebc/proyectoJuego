@@ -243,6 +243,8 @@ public class PantallaJuego implements Screen {
             ronda++;
             crearAsteroides(cantAsteroides + ronda);
             
+            nave.activarInvencibilidad();
+            
             if (ronda >= 3) {
                 tiempoParaSpawnEnemigo = TIEMPO_SPAWN_ENEMIGO / 2;
             }
