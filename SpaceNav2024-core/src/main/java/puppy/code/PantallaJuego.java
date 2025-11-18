@@ -216,9 +216,18 @@ public class PantallaJuego implements Screen {
 
         Iterator<NaveEnemiga> enemigoIter = navesEnemigas.iterator();
         while (enemigoIter.hasNext()) {
-            if (enemigoIter.next().isDestroyed()) {
-                enemigoIter.remove();
-            }
+                    NaveEnemiga enemigo = enemigoIter.next(); 
+                    if (enemigo.getY() < 0) {
+                        if (ronda >= 3) {
+                            if (score > game.getHighScore()) {
+                                game.setHighScore(score);
+                            }
+                            gameMusic.stop();
+                            game.setScreen(new PantallaGameOver(game));
+                            dispose();
+                            return;
+                        }
+                    }
         }
         
         Iterator<BalaEnemiga> balaEnemigaIter = balasEnemigas.iterator();
