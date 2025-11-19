@@ -14,14 +14,17 @@ public class Ball2 extends EntidadJuego implements Destructible{
     }
     
     @Override
-    public void update(float delta) {
-    	if (destroyed) return;
+    public final void update(float delta) {
+        if (destroyed) return;
 
+        doMove(delta);        
         
+    }
+    
+    protected void doMove(float delta) {
         float newX = getX() + (xSpeed * delta);
         float newY = getY() + (ySpeed * delta);
-        
-        
+
         int screenWidth = Gdx.graphics.getWidth();
         int screenHeight = Gdx.graphics.getHeight();
 
