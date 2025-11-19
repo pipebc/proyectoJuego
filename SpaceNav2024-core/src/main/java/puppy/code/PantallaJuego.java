@@ -14,7 +14,16 @@ import java.util.Iterator;
 
 
 public class PantallaJuego implements Screen {
+	
+	private static PantallaJuego instance = null;
 
+    public static PantallaJuego getInstance(SpaceNavigation game, int vidas, int ronda, float velX, float velY, int cant) {
+        if (instance == null) {
+            instance = new PantallaJuego(game, vidas, ronda, velX, velY, cant);
+        }
+        return instance;
+    }
+	
 	private SpaceNavigation game;
 	private OrthographicCamera camera;	
 	
@@ -58,6 +67,8 @@ public class PantallaJuego implements Screen {
         this.cantAsteroides = cant;
         this.score = 0;
         
+        instance = this;
+        
         camera = new OrthographicCamera();
         camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         
@@ -90,7 +101,12 @@ public class PantallaJuego implements Screen {
         
         crearAsteroides(cantAsteroides);
 	}
-		private void crearAsteroides(int cantidad) {
+	
+	public static void resetInstanceForTests() {
+        instance = null;
+    }
+	
+	private void crearAsteroides(int cantidad) {
         for (int i = 0; i < cantidad; i++) {
             float x = MathUtils.random(0, Gdx.graphics.getWidth());
             float y = MathUtils.random(0, Gdx.graphics.getHeight());
