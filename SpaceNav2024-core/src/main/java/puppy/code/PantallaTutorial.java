@@ -46,6 +46,10 @@ public class PantallaTutorial implements Screen {
         font.draw(batch, "- Moverse Arriba/Abajo: W / S", width * 0.15f, height * 0.55f);
         font.draw(batch, "- Moverse Izq./Der.: A / D", width * 0.15f, height * 0.5f);
         font.draw(batch, "- Disparar: Barra Espaciadora", width * 0.15f, height * 0.45f);
+        
+        font.draw(batch, "Armas y Modos:", width * 0.1f, height * 0.38f);
+        font.draw(batch, "- Cambiar modo: Tecla Q", width * 0.15f, height * 0.33f);
+        font.draw(batch, "- Seleccion directa: 1 (Normal) | 2 (Rapido) | 3 (Rafaga)", width * 0.15f, height * 0.28f); 
 
         font.draw(batch, "Toca la pantalla o presiona cualquier tecla para comenzar...", width * 0.1f, height * 0.15f);
 
